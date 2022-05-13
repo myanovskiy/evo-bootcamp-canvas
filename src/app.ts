@@ -1,3 +1,5 @@
+// HOMETASK: add "bilal_goregen.mp4" video to the background
+
 const canvas = document.createElement("canvas");
 canvas.width = 800;
 canvas.height = 500;
