@@ -10,18 +10,11 @@ const video = document.createElement("video");
 video.autoplay = true;
 video.src = new URL("videos/catvibing.mp4", import.meta.url).toString();
 video.muted = true;
+video.loop = true;
 video.play();
-
-const stream = canvas.captureStream();
-const recorder = new MediaRecorder(stream);
 
 video.addEventListener("play", () => {
     requestAnimationFrame(drawFrame);
-    recorder.start();
-});
-
-video.addEventListener("ended", () => {
-    recorder.stop();
 });
 
 function drawFrame() {
@@ -43,6 +36,37 @@ function drawFrame() {
     requestAnimationFrame(drawFrame);
 }
 
+const secondCanvas = document.createElement("canvas");
+secondCanvas.width = 800;
+secondCanvas.height = 500;
+const secondCtx = secondCanvas.getContext("2d")!;
+
+const secondVideo = document.createElement("video");
+
+secondVideo.autoplay = true;
+secondVideo.src = new URL("videos/bilal_goregen.mp4", import.meta.url).toString();
+secondVideo.muted = true;
+secondVideo.play();
+
+const stream = secondCanvas.captureStream();
+const recorder = new MediaRecorder(stream);
+
+secondVideo.addEventListener("play", () => {
+    requestAnimationFrame(drawSecondFrame);
+    recorder.start();
+});
+
+secondVideo.addEventListener("ended", () => {
+    recorder.stop();
+    video.pause();
+});
+
+function drawSecondFrame() {
+    secondCtx.drawImage(secondVideo, 0, 0, canvas.width, canvas.height);
+    secondCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+
+    requestAnimationFrame(drawSecondFrame);
+}
 
 const chunks: Blob[] = [];
 recorder.addEventListener("dataavailable", (event) => {
@@ -56,4 +80,4 @@ recorder.addEventListener("stop", () => {
     document.body.appendChild(link);
 });
 
-document.body.appendChild(canvas);
+document.body.appendChild(secondCanvas);
