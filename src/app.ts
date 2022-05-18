@@ -13,8 +13,29 @@ video.muted = true;
 video.loop = true;
 video.play();
 
-video.addEventListener("play", () => {
+const secondCanvas = document.createElement("canvas");
+secondCanvas.width = 800;
+secondCanvas.height = 500;
+const secondCtx = secondCanvas.getContext("2d")!;
+
+const secondVideo = document.createElement("video");
+
+secondVideo.autoplay = true;
+secondVideo.src = new URL("videos/bilal_goregen.mp4", import.meta.url).toString();
+secondVideo.muted = true;
+secondVideo.play();
+
+const stream = secondCanvas.captureStream();
+const recorder = new MediaRecorder(stream);
+
+secondVideo.addEventListener("play", () => {
     requestAnimationFrame(drawFrame);
+    recorder.start();
+});
+
+secondVideo.addEventListener("ended", () => {
+    recorder.stop();
+    video.pause();
 });
 
 function drawFrame() {
@@ -33,39 +54,11 @@ function drawFrame() {
     }
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.putImageData(data, 0, 0);
-    requestAnimationFrame(drawFrame);
-}
 
-const secondCanvas = document.createElement("canvas");
-secondCanvas.width = 800;
-secondCanvas.height = 500;
-const secondCtx = secondCanvas.getContext("2d")!;
-
-const secondVideo = document.createElement("video");
-
-secondVideo.autoplay = true;
-secondVideo.src = new URL("videos/bilal_goregen.mp4", import.meta.url).toString();
-secondVideo.muted = true;
-secondVideo.play();
-
-const stream = secondCanvas.captureStream();
-const recorder = new MediaRecorder(stream);
-
-secondVideo.addEventListener("play", () => {
-    requestAnimationFrame(drawSecondFrame);
-    recorder.start();
-});
-
-secondVideo.addEventListener("ended", () => {
-    recorder.stop();
-    video.pause();
-});
-
-function drawSecondFrame() {
     secondCtx.drawImage(secondVideo, 0, 0, canvas.width, canvas.height);
     secondCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
 
-    requestAnimationFrame(drawSecondFrame);
+    requestAnimationFrame(drawFrame);
 }
 
 const chunks: Blob[] = [];
